@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,6 +15,7 @@ namespace DesktopDuplication.Demo
     public partial class FormDemo : Form
     {
         private DesktopDuplicator desktopDuplicator;
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public FormDemo()
         {
@@ -31,7 +33,7 @@ namespace DesktopDuplication.Demo
 
         private void FormDemo_Shown(object sender, EventArgs e)
         {
-            while (true)
+            while (_cancellationTokenSource.IsCancellationRequested == false)
             {
                 Application.DoEvents();
 
@@ -66,6 +68,11 @@ namespace DesktopDuplication.Demo
                     this.BackgroundImage = frame.DesktopImage;
                 }
             }
+        }
+
+        private void FormDemo_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _cancellationTokenSource.Cancel();
         }
     }
 }
